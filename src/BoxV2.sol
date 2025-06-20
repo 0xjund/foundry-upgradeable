@@ -2,18 +2,34 @@
 
 pragma solidity 0.8.24;
 
-import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract BoxV2{
-    uint256 internal number;
+contract BoxV2 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
+    uint256 internal value;
+    /// @custom:oz-upgrades-unsafe-allow constructor
 
-    function setNumber(uint256 _number) external {}
-
-    function getNumber() external view returns(uint256) {
-        return number;
+    constructor() {
+        _disableInitializers();
     }
 
-    function version() external pure returns(uint256) {
+    function initialize() public initializer {
+        __Ownable_init(msg.sender);
+        __UUPSUpgradeable_init();
+    }
+
+    function setValue(uint256 newValue) public {
+        value = newValue;
+    }
+
+    function getValue() public view returns (uint256) {
+        return value;
+    }
+
+    function version() public pure returns (uint256) {
         return 2;
     }
+
+    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }
